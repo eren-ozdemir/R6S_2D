@@ -8,9 +8,14 @@ public class PlayerCombat : MonoBehaviour
 {
     public Transform attackPoint;
     public Transform attackDirection;
-    LayerMask layerMask;
-    int range;
+    Player player;
+    Animator playerAnimator;
 
+    private void Start()
+    {
+        player = GetComponent<Player>();
+        playerAnimator = GetComponent<Animator>();
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -20,9 +25,8 @@ public class PlayerCombat : MonoBehaviour
     }
     public void Attack()
     {
-        range = transform.GetComponent<Player>().attackRange;
         //Play Attack Animation
-        Animator playerAnimator = GetComponent<Animator>();
+        
         playerAnimator.SetTrigger("Attack");
 
         //Detect Target Objects
@@ -34,7 +38,7 @@ public class PlayerCombat : MonoBehaviour
         //Layer mask for ray (Ray will interact everything except friendly and path layers)
         int bitmask = ~(1 << attack) & ~(1 << path);
 
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, attackDirection.transform.right, range, bitmask);
+        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, attackDirection.transform.right, player.attackRange, bitmask);
         
         if (hitInfo)
         {

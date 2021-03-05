@@ -12,14 +12,12 @@ public class PlayerController : MonoBehaviour
     public Tilemap stops;
     public float maxX = .5f;
     public GameObject moveReference;
-    public string facing = "right";
     public Transform attackDirection;
-    public int damage;
+    Player player;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        player = transform.GetComponent<Player>();
     }
 
     // Update is called once per frame
