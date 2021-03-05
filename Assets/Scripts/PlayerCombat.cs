@@ -71,5 +71,6 @@ public class PlayerCombat : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         hittedPlayer.isDead = true;
+        Destroy(hittedPlayer.GetComponentInParent<BoxCollider2D>());
     }
 }

@@ -5,9 +5,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int health;
-    public Vector3Int onTile;
-    public Vector3Int lookingTile;
     public int damage;
     public int attackRange;
+    public float designRange;
     public bool isDead = false;
+    public Vector3Int onTile;
+    public Vector3Int lookingTile;
 }
