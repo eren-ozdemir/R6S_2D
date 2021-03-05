@@ -48,12 +48,24 @@ public class PlayerCombat : MonoBehaviour
         Player hittedPlayer = hitInfo.transform.GetComponent<Player>();
         Animator hittedPlayerAnimator = hitInfo.transform.GetComponent<Animator>();
 
-        int damage = transform.GetComponent<Player>().damage;
-        hittedPlayer.health -= damage;
-
-        if (hittedPlayer.health <= 0)
+        if (!hittedPlayer.isDead)
         {
-            hittedPlayerAnimator.SetTrigger("Dying");
+            int damage = transform.GetComponent<Player>().damage;
+            hittedPlayer.health -= damage;
+            hittedPlayerAnimator.SetTrigger("TakeHit");
+
+            if (hittedPlayer.health <= 0)
+            {
+                hittedPlayerAnimator.SetTrigger("Dying");
+                StartCoroutine(DelayedDead(hittedPlayer, hittedPlayerAnimator.GetCurrentAnimatorStateInfo(0).length));
+            }
         }
+        
+    }
+
+    IEnumerator DelayedDead(Player hittedPlayer, float delay = 0)
+    {
+        yield return new WaitForSeconds(delay);
+        hittedPlayer.isDead = true;
     }
 }
