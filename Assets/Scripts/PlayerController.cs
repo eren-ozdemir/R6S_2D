@@ -15,6 +15,12 @@ public class PlayerController : MonoBehaviour
     Transform attackDirection;
     Player player;
 
+    [Header("Reinforce")]
+    public Tilemap softWalls;
+    public Tilemap hardWalls;
+    public TileBase tileBase;
+    public float reinforceRange;
+
     private void Start()
     {
         player = transform.GetComponent<Player>();
@@ -43,6 +49,10 @@ public class PlayerController : MonoBehaviour
         {
             attackDirection.transform.eulerAngles = new Vector3(0f, 0f, 0f);
             Move(step, 0);
+        }
+        else if (Input.GetKeyDown(KeyCode.G))
+        {
+            Reinforce(LookingTile());
         }
         else if (Input.GetMouseButtonDown(0))
         {
@@ -80,13 +90,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void LookingTile()
+    Vector3Int LookingTile()
     {
         //Layer numbers
         int path = 8;
         int attack = 9;
-        int softWalls = 11;
-        int hardWalls = 12;
+        //int defense = 10;
+        //int softWalls = 11;
+        //int hardWalls = 12;
 
         //Layer mask for ray (Ray will interact everything except friendly and path layers)
         int bitmask = ~(1 << attack) & ~(1 << path);
@@ -101,8 +112,20 @@ public class PlayerController : MonoBehaviour
             if (hittedTileMap)
             {
                 Vector3Int lookingTile = hittedTileMap.WorldToCell(hitInfo.point);
+                return lookingTile;
             }
         }
+        return new Vector3Int(0,0,0);
 
+    }
+
+    void Reinforce(Vector3Int lookingTile)
+    {
+        float distance = Vector3.Distance(transform.position, lookingTile);
+        if(distance <= reinforceRange)
+        {
+            hardWalls.SetTile(lookingTile, tileBase);
+            softWalls.SetTile(lookingTile, null);
+        }
     }
 }
