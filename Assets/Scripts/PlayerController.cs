@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float step;
     public int speed;
     public GameObject moveReference;
+    public Rigidbody2D rb;
+    Vector2 movement;
     Transform attackDirection;
     Player player;
 
@@ -26,27 +28,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            attackDirection.transform.eulerAngles = new Vector3(0f, 0f, 90f);
-            Move(0, step);
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            attackDirection.transform.eulerAngles = new Vector3(0f, 0f, 180f);
-            Move(-step, 0);
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            attackDirection.transform.eulerAngles = new Vector3(0f, 0f, -90f);
-            Move(0, -step);
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            attackDirection.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            Move(step, 0);
-        }
-        else if (Input.GetKeyDown(KeyCode.G))
+
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetKeyDown(KeyCode.G))
         {
             Reinforce(LookingTile());
         }
@@ -59,11 +45,11 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(transform.position, mouseWorldPosition - transform.position, Color.red);
         
     }
-    void Move(float horizontal, float vertical)
-    {
-        transform.position = Vector3.MoveTowards(transform.position, transform.position + new Vector3(horizontal, vertical, 0), speed * Time.deltaTime);
-    }
 
+    private void FixedUpdate()
+    {
+        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+    }
 
     Vector3Int LookingTile()
     {

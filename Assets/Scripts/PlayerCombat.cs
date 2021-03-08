@@ -38,7 +38,9 @@ public class PlayerCombat : MonoBehaviour
         //Layer mask for ray (Ray will interact everything except friendly and path layers)
         int bitmask = ~(1 << attack) & ~(1 << path);
 
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, attackDirection.transform.right, player.attackRange, bitmask);
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, mouseWorldPosition - transform.position, player.attackRange, bitmask);
         
         if (hitInfo)
         {
