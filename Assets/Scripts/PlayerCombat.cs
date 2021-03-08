@@ -32,17 +32,17 @@ public class PlayerCombat : MonoBehaviour
         //Detect Target Objects
 
         //Layer numbers
-        int path = 8;
         int attack = 9;
+        int softWalls = 11;
 
-        //Layer mask for ray (Ray will interact everything except friendly and path layers)
-        int bitmask = ~(1 << attack) & ~(1 << path);
+        //Layer mask for ray (Ray will interact everything except these)
+        int bitmask = ~(1 << attack) & ~(1 << softWalls);
 
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, mouseWorldPosition - transform.position, player.attackRange, bitmask);
         
-        if (hitInfo)
+        if (hitInfo.transform.tag == "Player")
         {
             Damage(hitInfo);
             Debug.Log(hitInfo.transform.name);

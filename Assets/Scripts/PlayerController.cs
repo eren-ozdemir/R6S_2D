@@ -54,14 +54,13 @@ public class PlayerController : MonoBehaviour
     Vector3Int LookingTile()
     {
         //Layer numbers
-        int path = 8;
         int attack = 9;
-        //int defense = 10;
+        int defense = 10;
         //int softWalls = 11;
         //int hardWalls = 12;
 
         //Layer mask for ray (Ray will interact everything except friendly and path layers)
-        int bitmask = ~(1 << attack) & ~(1 << path);
+        int bitmask = ~(1 << attack) & ~(1 << defense);
 
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPosition.z = 0;
