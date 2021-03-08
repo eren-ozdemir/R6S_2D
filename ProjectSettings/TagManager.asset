@@ -20,7 +20,7 @@ TagManager:
   - Defense
   - Soft Walls
   - Hard Walls
-  - 
+  - Hatch
   - 
   - 
   - 
@@ -46,9 +46,12 @@ TagManager:
   - name: Path
     uniqueID: 3859009715
     locked: 0
+  - name: Wall
+    uniqueID: 4292283813
+    locked: 0
   - name: Player
     uniqueID: 1520131767
     locked: 0
-  - name: Wall
-    uniqueID: 4292283813
+  - name: Hath
+    uniqueID: 1729725463
     locked: 0
