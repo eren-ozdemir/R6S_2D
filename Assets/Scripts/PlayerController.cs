@@ -41,8 +41,8 @@ public class PlayerController : MonoBehaviour
             LookingTile();
 
         }
-        Vector3 mouseWorldPosition  = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Debug.DrawRay(transform.position, mouseWorldPosition - transform.position, Color.red);
+        //Vector3 mouseWorldPosition  = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Debug.DrawRay(transform.position, mouseWorldPosition - transform.position, Color.red);
         
     }
 
