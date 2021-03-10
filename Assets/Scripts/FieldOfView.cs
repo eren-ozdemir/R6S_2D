@@ -4,68 +4,101 @@ using UnityEngine;
 
 public class FieldOfView : MonoBehaviour
 {
-    public float angle = 90;
-    public float viewDistance = 2f;
-    Vector2 direction;
-    Vector3 middle;
-    Vector3 leftRay;
-    Vector3 rightRay;
-    Vector3 right;
-
+    [SerializeField] LayerMask layerMask;
     // Start is called before the first frame update
-    void Start()
+    private Mesh mesh;
+    private Vector3 origin;
+    private float startingAngle;
+    public float fov = 180f;
+    float viewDistance = 10f;
+
+    private void Start()
     {
-        
+        mesh = new Mesh();
+        GetComponent<MeshFilter>().mesh = mesh;
+        Vector3 origin = Vector3.zero;
     }
+    private void LateUpdate() { 
+        int rayCount = 70;
+        float angle = startingAngle;
+        float angleIncrease = fov / rayCount;
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        GetVectorFromAngle(angle);
-    }
+        Vector3[] vertices = new Vector3[rayCount + 1 + 1];
+        Vector2[] uv = new Vector2[vertices.Length];
+        int[] triangles = new int[rayCount * 3];
 
-    private void OnDrawGizmos()
-    {
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Gizmos.DrawSphere(mouseWorldPosition, 0.1f);
-        Gizmos.DrawRay(transform.position, leftRay- transform.position);
-    }
+        vertices[0] = origin;
 
-    void GetVectorFromAngle(float angle)
-    {
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPosition.z = 0;
-        angle /= 2;
-        angle *= Mathf.Deg2Rad;
+        int vertexIndex = 1;
+        int triangleIndex = 0;
 
-        middle = mouseWorldPosition;
-        right = new Vector3(transform.position.x + viewDistance, transform.position.y);
-        float angleFromRight = Vector3.Angle(middle - transform.position, right - transform.position);
-
-        angleFromRight *= Mathf.Deg2Rad;
-
-        leftRay = Vector3.zero;
-        rightRay = Vector3.zero;
-
-
-        if (middle.y >= transform.position.y)
+        for (int i = 0; i <= rayCount; i++)
         {
-            leftRay.x = transform.position.x + viewDistance * Mathf.Cos(angleFromRight + angle);
-            leftRay.y = transform.position.y + viewDistance * Mathf.Sin(angleFromRight + angle);
-            rightRay.x = transform.position.x + viewDistance * Mathf.Cos(angleFromRight - angle);
-            rightRay.y = transform.position.y + viewDistance * Mathf.Sin(angleFromRight - angle);
+            Vector3 vertex;
+            RaycastHit2D raycastHit2d = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance, layerMask);
+            if(raycastHit2d.collider == null)
+            {
+                vertex = origin + GetVectorFromAngle(angle) * viewDistance;
+            }
+            else
+            {
+                vertex = raycastHit2d.point;
+            }
 
+            vertices[vertexIndex] = vertex;
+
+            if (i > 0)
+            {
+
+                triangles[triangleIndex + 0] = 0;
+                triangles[triangleIndex + 1] = vertexIndex - 1;
+                triangles[triangleIndex + 2] = vertexIndex;
+
+                triangleIndex += 3;
+            }
+            vertexIndex++;
+            angle -= angleIncrease;
         }
-        else{
-            leftRay.x = transform.position.x + viewDistance * Mathf.Cos(2*Mathf.PI- angleFromRight + angle);
-            leftRay.y = transform.position.y + viewDistance * Mathf.Sin(2*Mathf.PI - angleFromRight + angle);
-            rightRay.x = transform.position.x + viewDistance * Mathf.Cos(2 * Mathf.PI - angleFromRight - angle);
-            rightRay.y = transform.position.y + viewDistance * Mathf.Sin(2 * Mathf.PI - angleFromRight - angle);
+
+        mesh.vertices = vertices;
+        mesh.uv = uv;
+        mesh.triangles = triangles;
+    }
+
+    public void AimDownSight(bool aimDownSight)
+    {
+        if (aimDownSight)
+        {
+            viewDistance = 15f;
+            fov = 45f;
         }
+        else
+        {
+            viewDistance = 10f;
+            fov = 60f;
+        }
+    }
 
-        Debug.DrawRay(transform.position, middle - transform.position, Color.black);
-        Debug.DrawRay(transform.position, leftRay - transform.position, Color.yellow);
-        Debug.DrawRay(transform.position, rightRay - transform.position, Color.red);
+    Vector3 GetVectorFromAngle(float angle)
+    {
+        float angleRad = angle * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+    }
+    public static float GetAngleFromVectorFloat(Vector3 dir)
+    {
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0) n += 360;
 
+        return n;
+    }
+    public void SetOrigin(Vector3 origin)
+    {
+        this.origin = origin;
+    }
+
+    public void SetAimDirection(Vector3 aimDirection)
+    {
+        startingAngle = GetAngleFromVectorFloat(aimDirection) + fov /2 ;
     }
 }

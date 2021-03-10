@@ -5,13 +5,14 @@ using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private FieldOfView fieldOfView;
     public float step;
     public int speed;
     public GameObject moveReference;
     public Rigidbody2D rb;
     Vector2 movement;
-    Transform attackDirection;
     Player player;
+    bool aimDownSight = false;
 
     [Header("Reinforce")]
     public Tilemap softWalls;
@@ -22,11 +23,10 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         player = transform.GetComponent<Player>();
-        attackDirection = GetComponent<PlayerCombat>().attackDirection;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
         movement.x = Input.GetAxisRaw("Horizontal");
@@ -40,15 +40,25 @@ public class PlayerController : MonoBehaviour
         {
             LookingTile();
 
+        }else if (Input.GetMouseButtonDown(1))
+        {
+            fieldOfView.AimDownSight(aimDownSight);
+            aimDownSight = !aimDownSight;
+
         }
         //Vector3 mouseWorldPosition  = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //Debug.DrawRay(transform.position, mouseWorldPosition - transform.position, Color.red);
-        
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPosition.z = 0;
+        fieldOfView.SetOrigin(transform.position);
+        fieldOfView.SetAimDirection((mouseWorldPosition - transform.position).normalized);
     }
 
     private void FixedUpdate()
     {
+        
         rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+        
     }
 
     Vector3Int LookingTile()
