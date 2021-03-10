@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     public Tilemap softWalls;
     public Tilemap hardWalls;
     public TileBase tileBase;
-    public float reinforceRange;
+    bool isTileSoftWall = false;
 
     private void Start()
     {
@@ -79,11 +79,22 @@ public class PlayerController : MonoBehaviour
         {
             Tilemap hittedTileMap = hitInfo.transform.GetComponent<Tilemap>();
 
+            if(hittedTileMap.name == "Soft Wall")
+            {
+                isTileSoftWall = true;
+            }
+            else
+            {
+                isTileSoftWall = false;
+            }
+
             if (hittedTileMap)
             {
                 Vector3Int lookingTile = hittedTileMap.WorldToCell(hitInfo.point);
                 return lookingTile;
             }
+
+            
         }
         return new Vector3Int(0,0,0);
 
@@ -91,11 +102,12 @@ public class PlayerController : MonoBehaviour
 
     void Reinforce(Vector3Int lookingTile)
     {
-        float distance = Vector3.Distance(transform.position, lookingTile);
-        if(distance <= reinforceRange)
+        if(isTileSoftWall)
         {
-            hardWalls.SetTile(lookingTile, tileBase);
             softWalls.SetTile(lookingTile, null);
+            hardWalls.SetTile(lookingTile, tileBase);
         }
+
+
     }
 }

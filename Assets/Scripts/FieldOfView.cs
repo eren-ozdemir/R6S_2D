@@ -63,6 +63,7 @@ public class FieldOfView : MonoBehaviour
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
+        mesh.bounds = new Bounds(origin, Vector3.one * 1000);
     }
 
     public void AimDownSight(bool aimDownSight)
@@ -101,4 +102,8 @@ public class FieldOfView : MonoBehaviour
     {
         startingAngle = GetAngleFromVectorFloat(aimDirection) + fov /2 ;
     }
+
+
+
+
 }
